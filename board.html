@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JLtaskboard ver 10 🔎🔎</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="icon" href="jl_favicon.ico" type="image/x-icon" />
+  </head>
+  <div class="header">
+    <div class="logo">
+      <!-- Replace with the actual path to your logo -->
+      <img src="logo1.png" alt="JLtaskboard Logo" />
+    </div>
+    <div class="search-container">
+      <input id="searchInput" type="text" placeholder="Search" />
+      <i class="fas fa-search search-icon"></i>
+      <div id="searchResults" class="search-results">
+        <button id="closeResults" class="close-results-btn">×</button>
+        <!-- The search results will be appended here -->
+      </div>
+    </div>
+    <div class="right-data-overview">
+      <p>
+        עדכני : <i class="fas fa-print"></i> הדפסה
+        <span id="printCount">[number]</span>
+      </p>
+      <p>
+        <i class="fas fa-scissors"></i> גימורים
+        <span id="finishingCount">[number]</span>
+      </p>
+      <p>
+        <i class="fas fa-sync-alt"></i> עדכונים
+        <span id="updateCount">[number]</span>
+      </p>
+    </div>
+
+    <div class="left-competition">
+      <!-- <p>
+        מצטיין הדפוס: <span id="bestFinisherName">[name]</span> עם
+        <span id="bestFinisherCount">[number]</span> הזמנות
+      </p> -->
+    </div>
+  </div>
+
+  <body>
+    <!-- This container holds the task columns and arranges them horizontally -->
+    <div id="task-columns-container">
+      <div class="column" id="printing">
+        <div class="listHeader">
+          <button class="add-task" onclick="addTask('printing')">+</button>
+
+          <h2>הדפסה</h2>
+          <select class="status-sorter" data-column-id="printing">
+            <!-- Options will be populated dynamically -->
+          </select>
+
+          <select class="date-sorter" data-column-id="printing">
+            <option value="all">כל התאריכים</option>
+            <option value="pastDue">עבר הזמן</option>
+            <option value="today">היום</option>
+            <option value="tomorrow">מחר</option>
+            <option value="dayAfterTomorrow">מחרתיים</option>
+          </select>
+        </div>
+        <label>
+          <input type="checkbox" id="inProcessCheckbox" />
+          בתהליך
+        </label>
+        <div class="temporary-task-container" style="display: none"></div>
+        <!-- Add this line -->
+
+        <!-- Tasks will be here -->
+      </div>
+      <div class="column" id="finishing">
+        <div class="listHeader">
+          <h2>גימורים</h2>
+          <select class="status-sorter" data-column-id="finishing">
+            <!-- Options will be populated dynamically -->
+          </select>
+          <select class="date-sorter" data-column-id="finishing">
+            <option value="all">כל התאריכים</option>
+            <option value="pastDue">עבר הזמן</option>
+            <option value="today">היום</option>
+            <option value="tomorrow">מחר</option>
+            <option value="dayAfterTomorrow">מחרתיים</option>
+          </select>
+          <button class="add-task" onclick="addTask('finishing')">+</button>
+        </div>
+        <!-- Tasks will be here -->
+      </div>
+      <div class="column" id="update">
+        <div class="listHeader">
+          <h2>לעדכן</h2>
+          <select class="status-sorter" data-column-id="update">
+            <!-- Options will be populated dynamically -->
+          </select>
+          <select class="date-sorter" data-column-id="update">
+            <option value="all">כל התאריכים</option>
+            <option value="pastDue">עבר הזמן</option>
+            <option value="today">היום</option>
+            <option value="tomorrow">מחר</option>
+            <option value="dayAfterTomorrow">מחרתיים</option>
+          </select>
+          <button class="add-task" onclick="addTask('update')">+</button>
+        </div>
+        <!-- Tasks will be here -->
+      </div>
+    </div>
+
+    <!-- Task Creation Modal -->
+    <div id="taskCreationModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create New Task</h2>
+        <!-- Clear Fields Button -->
+        <button id="clearFieldsButton">נקה שדות</button>
+        <div>
+          <label for="taskCreator">שם פותח משימה:</label>
+          <input
+            type="text"
+            id="taskCreator"
+            placeholder="הכנס שם פותח משימה"
+          />
+          <div id="nameButtons">
+            <button type="button" class="name-button" data-name="יהונתן">
+              יהונתן
+            </button>
+            <button type="button" class="name-button" data-name="אהרון">
+              אהרון
+            </button>
+            <button type="button" class="name-button" data-name="ישראל">
+              ישראל
+            </button>
+            <button type="button" class="name-button" data-name="רעות">
+              רעות
+            </button>
+            <button type="button" class="name-button" data-name="נעמה">
+              נעמה
+            </button>
+            <button type="button" class="name-button" data-name="נועם">
+              נועם
+            </button>
+            <button type="button" class="name-button" data-name="יסמין">
+              יסמין
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label for="taskDueDate">צריך להיות מוכן עד:</label>
+          <input type="date" id="taskDueDate" />
+        </div>
+
+        <div>
+          <label for="clientName">שם לקוח:</label>
+          <input
+            list="contactList"
+            id="clientName"
+            placeholder="Enter client name"
+          />
+          <datalist id="contactList"></datalist>
+          <input type="email" id="customerEmail" placeholder="Customer Email" />
+          <input type="tel" id="customerPhone" placeholder="Customer Phone" />
+        </div>
+
+        <div>
+          <label for="orderNumber">מספר הזמנה:</label>
+          <input type="text" id="orderNumber" placeholder="מספר הזמנה" />
+        </div>
+
+        <div>
+          <label for="product">מוצר:</label>
+          <input type="text" id="product" placeholder="מוצר" />
+        </div>
+
+        <!-- File Upload Section -->
+        <div>
+          <label for="taskFiles">העלה קבצים:</label>
+          <input type="file" id="taskFiles" multiple />
+        </div>
+        <!-- Add a new section for the URL links -->
+        <div id="urlLinksSection">
+          <label>קישורים:</label>
+          <button type="button" id="addUrlLink">הוסף קישור</button>
+          <table id="urlLinksTable">
+            <thead>
+              <tr>
+                <th>קישור ל:</th>
+                <th>בחר קובץ</th>
+                <th>מחק</th>
+                <th>ערוך</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- URL rows will be dynamically added here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Comments Section -->
+        <div>
+          <label for="taskComments">הערות:</label>
+          <textarea
+            id="taskComments"
+            placeholder="הכנס הערות נוספות כאן"
+            style="width: 100%; height: 150px; resize: none"
+          ></textarea>
+        </div>
+
+        <button id="createTaskButton">צור משימה</button>
+      </div>
+    </div>
+
+    <!-- This container sits below the task columns -->
+    <div id="completed-tasks-container">
+      <div id="completed-tasks-toggle" onclick="toggleCompletedTasks()">
+        ⬇️ משימות שנגמרו
+      </div>
+      <div id="completed-tasks" style="display: none">
+        <!-- Completed tasks will be appended here -->
+      </div>
+    </div>
+
+    <!-- edit task -->
+    <div id="editTaskModal" class="modal" style="display: none; direction: rtl">
+      <div class="modal-content">
+        <span id="close" style="cursor: pointer">×</span>
+        <h2>עריכת משימה</h2>
+        <form id="editTaskForm">
+          <label for="clientName">שם לקוח:</label>
+          <input type="text" id="editClientName" name="clientName" />
+          <label for="orderNumber">מספר הזמנה:</label>
+          <input type="text" id="editOrderNumber" name="orderNumber" />
+          <label for="product">מוצר:</label>
+          <input type="text" id="editProduct" name="product" />
+          <label for="dueDate">תאריך יעד:</label>
+          <input type="date" id="editDueDate" name="dueDate" />
+          <label for="status">סטטוס:</label>
+          <select id="editStatus" name="status">
+            <option value="printing">הדפסה</option>
+            <option value="finishing">גימורים</option>
+            <option value="update">עדכון</option>
+          </select>
+
+          <label for="comments">הערות:</label>
+          <textarea id="editComments" name="comments"></textarea>
+          <button type="submit">שמור שינויים</button>
+        </form>
+      </div>
+    </div>
+    <!-- JONATHAN SECTION BEGIN -->
+
+    <div
+      id="timerModal"
+      style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        width: 300px;
+      "
+    >
+      <h2 style="margin: 0; font-size: 18px; color: #333">זמן הכנת קבצים</h2>
+
+      <div
+        id="timerModalHeader"
+        style="
+          cursor: move;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div
+          id="countdownDisplay"
+          style="
+            margin-top: 20px;
+            font-size: 100px;
+            text-align: center;
+            color: #007bff;
+            font-weight: bold;
+          "
+        >
+          00:00
+        </div>
+        <button
+          id="closeTimerButton"
+          style="
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+          "
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <input
+        type="text"
+        id="timerInput"
+        placeholder="Enter time in minutes:seconds (e.g., 1:00)"
+        style="
+          width: 100%;
+          padding: 10px;
+          margin-top: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-sizing: border-box;
+        "
+      />
+      <button
+        id="startTimerButton"
+        style="
+          margin-top: 10px;
+          padding: 8px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+        "
+      >
+        Start Timer
+      </button>
+      <button
+        id="resetTimerButton"
+        style="
+          margin-top: 10px;
+          padding: 8px;
+          background-color: #ff5722;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+        "
+      >
+        Reset Timer
+      </button>
+    </div>
+
+    <!-- JONATHAN SECTION END -->
+
+    <!-- status modal -->
+    <div id="jl-order-status-modal" class="jl-modal">
+      <div class="jl-modal-content">
+        <span id="jl-close-modal" class="jl-close">&times;</span>
+        <h2>מצב הזמנה</h2>
+        <table id="jl-order-status-table">
+          <thead>
+            <tr>
+              <th>מספר משימה</th>
+
+              <th>תוצר</th>
+              <th>שלב בייצור</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows will be added dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- end status modal -->
+
+    <!-- finishing modal-begin -->
+
+    <div id="finishingModal" class="modal">
+      <div class="modal-content">
+        <span id="closeFinishingModal" class="close">&times;</span>
+        <h2><i class="fas fa-tools"></i> גימורים</h2>
+        <!-- Icon added here -->
+        <div class="operator-buttons">
+          <!-- Buttons will be dynamically added here -->
+        </div>
+        <button id="confirmFinishing">אישור</button>
+      </div>
+    </div>
+
+    <!-- finishing modal-end -->
+    <!-- update modal -->
+    <div id="updateModal" class="modal">
+      <div class="modal-content">
+        <span id="closeUpdateModal" class="close">&times;</span>
+        <h2>מיקום</h2>
+        <div class="location-buttons">
+          <!-- Alphabet buttons will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- update modal -->
+
+    <!-- end edit task -->
+    <script src="script.js" type="module" defer></script>
+  </body>
+</html>

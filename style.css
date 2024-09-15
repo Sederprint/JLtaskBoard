@@ -1,0 +1,726 @@
+body {
+  margin-top: 5%;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;
+  padding: 5%;
+  position: relative; /* Required for the pseudo-element positioning */
+  z-index: 0; /* Ensure the body content is on top */
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("back1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.3; /* 50% opacity */
+  z-index: -1; /* Ensure the background is behind all other content */
+  pointer-events: none; /* Allows content interaction without affecting background */
+}
+
+h2 {
+  margin-top: 40px;
+}
+#task-columns-container {
+  display: flex;
+  justify-content: space-around; /* Horizontally align columns within this container */
+  width: 100%;
+  text-align: right;
+}
+
+.column {
+  width: 30%;
+  height: 800px;
+  overflow-y: scroll;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.add-task {
+  margin-bottom: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.add-task:hover {
+  background-color: #218838;
+}
+
+.task {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: grab;
+  position: relative;
+}
+
+.task.dragging {
+  opacity: 0.5;
+}
+
+.delete-task {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.delete-task:hover {
+  background-color: #c82333;
+}
+.complete-task {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.complete-task:hover {
+  background-color: #0056b3;
+}
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+#completed-tasks-container {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+#completed-tasks-toggle {
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 500px;
+  direction: rtl; /* Right-to-left direction */
+  text-align: right; /* Align text to the right */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add a drop shadow */
+  z-index: 100;
+}
+
+.close {
+  color: #aaa;
+  float: left; /* Position close button on the left */
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-content div {
+  margin-bottom: 15px; /* Space between rows */
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="date"] {
+  width: calc(100% - 20px); /* Full width minus padding */
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#createTaskButton {
+  background-color: #28a745; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%; /* Full width button */
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+#createTaskButton:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.name-button {
+  font-size: 10px; /* Very small text size */
+  padding: 2px 5px; /* Small padding to make the buttons tiny */
+  margin: 2px; /* Small margin between buttons */
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow-y: auto; /* Allows scrolling within each column */
+}
+
+.listHeader {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+  padding: 10px 0;
+  border-bottom: 2px solid #ccc;
+  display: flex;
+  justify-content: space-between; /* This will place the button on the right and the h2 on the left */
+  align-items: center; /* Aligns the items vertically in the center */
+}
+
+.listHeader h2 {
+  margin: 0;
+  padding-left: 10px; /* Optional: Adds some spacing between the h2 and the button */
+}
+
+.listHeader .add-task {
+  margin-right: 10px; /* Optional: Adds some spacing between the button and the edge of the header */
+}
+
+.task {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+#close {
+  font-size: xx-large;
+}
+/* Header styling */
+/* Header styling */
+/* .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5f5f5; /* Adjust background color as needed */
+/* padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure the header stays on top */
+/* border-top: 3px solid #b3aeae; /* Darker gray stroke at the top */
+/* } */
+
+/* Logo styling */
+/* .logo img {
+  height: 100%;
+  max-height: 3.5vh;
+  object-fit: contain;
+} */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff; /* White background */
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-top: 3px solid #b3aeae;
+  font-size: 1rem; /* Small font size */
+  color: #000000; /* Black text color */
+}
+
+.header .logo img {
+  height: 100%;
+  max-height: 3.5vh;
+  object-fit: contain;
+}
+
+.right-data-overview,
+.left-competition {
+  direction: rtl;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between elements */
+  margin-right: 80px;
+}
+
+.right-data-overview p,
+.left-competition p {
+  margin: 0 10px;
+  padding: 0;
+  display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .header {
+    height: 4vh;
+    font-size: 0.6rem; /* Even smaller font size on small screens */
+  }
+  .logo img {
+    height: 2.5vh;
+  }
+}
+
+/* Centered search container */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.search-container input[type="text"] {
+  width: 100%;
+  height: 3vh;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 1rem;
+  outline: none;
+  padding-right: 40px; /* Make room for the search icon */
+}
+
+.search-container .search-icon {
+  position: absolute;
+  right: 10px;
+  color: #bfbbbb;
+  cursor: pointer;
+}
+
+.search-results {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-results .task {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.search-results .task:hover {
+  background-color: #f9f9f9;
+}
+/* Style for the search results container */
+#searchResults {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%; /* Adjust the width as needed */
+  max-width: 600px; /* Optional: Max width */
+  background-color: white; /* Background color for the results */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for some depth */
+  padding: 20px; /* Padding inside the results container */
+  z-index: 1; /* Ensure it stays on top */
+  display: none; /* Initially hidden */
+  border-radius: 8px; /* Optional: rounded corners */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+  max-height: 80%; /* Ensure it doesn't go off-screen if too many results */
+}
+#editTaskModal {
+  z-index: 1100;
+}
+/* Style for the close button */
+/* Style for the close button */
+#closeResults {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  z-index: 1001; /* Ensure it stays on top of the results */
+}
+
+#closeResults:hover {
+  color: #000; /* Darken on hover for better visibility */
+}
+
+/* Style for the search results container */
+#searchResults {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  z-index: 1000;
+  display: none;
+  border-radius: 8px;
+  overflow-y: auto;
+  max-height: 80%;
+}
+
+.status-sorter {
+  margin-right: 100px;
+}
+.date-sorter {
+  margin-right: 150px;
+}
+#clearFieldsButton {
+  background-color: rgb(200, 201, 202);
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+.search-results .task {
+  text-align: center;
+}
+#timerModal {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* status modal begin */
+.jl-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.jl-modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+  border-radius: 10px;
+  text-align: right;
+  direction: rtl; /* Ensure modal content is RTL */
+}
+
+.jl-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.jl-close:hover,
+.jl-close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#jl-order-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  direction: rtl; /* Set table direction to RTL */
+  text-align: right;
+}
+
+#jl-order-status-table th,
+#jl-order-status-table td {
+  padding: 12px;
+  text-align: right; /* Ensure text aligns to the right */
+  border-bottom: 1px solid #ddd;
+}
+
+#jl-order-status-table th {
+  background-color: #f2f2f2;
+}
+
+/* status modal end */
+
+/* finishing modal style-begin */
+/* Modal Container */
+#finishingModal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+/* Modal Content Box */
+#finishingModal .modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 400px; /* Ensure a maximum width */
+  border-radius: 10px; /* Rounded corners */
+  text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a slight shadow for depth */
+}
+/* Icon inside the modal heading */
+#finishingModal h2 i {
+  margin-right: 10px; /* Space between the icon and the text */
+  color: #4caf50; /* Set the icon color to match the button color */
+  font-size: 24px; /* Set the icon size */
+}
+
+/* Close Button */
+#finishingModal .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: -10px;
+}
+
+#finishingModal .close:hover,
+#finishingModal .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Operator Buttons */
+#finishingModal .finishing-operator-button {
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding */
+  margin: 10px 5px; /* Margin between buttons */
+  text-align: center; /* Centered text */
+  font-size: 16px; /* Button font size */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+#finishingModal .finishing-operator-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Optional: Add some padding to the modal header */
+#finishingModal h2 {
+  padding-bottom: 20px;
+  font-size: 24px; /* Larger font size */
+}
+.operator-button {
+  display: block; /* Ensure buttons are stacked vertically */
+  width: 100%; /* Make buttons full-width */
+  padding: 20px; /* Increase padding for larger buttons */
+  font-size: 18px; /* Increase font size */
+  margin-bottom: 15px; /* Add space between buttons */
+  background-color: #f0f0f0; /* Light gray background */
+  border: 2px solid #ccc; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+}
+
+.operator-button:hover {
+  background-color: #d0d0d0; /* Slightly darker on hover */
+  transform: scale(1.05); /* Slightly enlarge button on hover */
+}
+
+/* finishing modal style-end */
+
+/* update modal- begin */
+/* Modal Container */
+#updateModal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
+
+/* Modal Content Box */
+#updateModal .modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 500px; /* Max width of the modal */
+  text-align: center; /* Center the text and buttons */
+}
+
+/* Close Button */
+#updateModal .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#updateModal .close:hover,
+#updateModal .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Buttons inside the modal */
+#updateModal .location-buttons button,
+#updateModal #arunitButton,
+#updateModal #biyzurButton {
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Some padding */
+  margin: 10px 5px; /* Space between buttons */
+  border: none; /* Remove borders */
+  cursor: pointer; /* Pointer/hand icon */
+  font-size: 16px; /* Increase font size */
+  border-radius: 4px; /* Rounded corners */
+}
+
+#updateModal .location-buttons button:hover,
+#updateModal #arunitButton:hover,
+#updateModal #biyzurButton:hover {
+  background-color: #45a049; /* Darker green */
+}
+
+/* Ensure the buttons are spaced out and centered */
+#updateModal .location-buttons {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap */
+  justify-content: center; /* Center the buttons */
+  gap: 10px; /* Space between the buttons */
+}
+
+/* Ensure the whole modal content is centered */
+#updateModal .modal-content {
+  text-align: center;
+}
+
+/* update modal- end */
+
+/* //files urls-new🔗🔗-begin */
+#urlLinksTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#urlLinksTable th,
+#urlLinksTable td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+#urlLinksTable th {
+  background-color: #f9f9f9;
+}
+
+#addUrlLink {
+  margin-bottom: 10px;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+
+/* //files urls-new🔗🔗-end */
